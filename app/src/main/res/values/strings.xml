@@ -1,0 +1,22 @@
+<resources>
+    <string name="app_name">Criminal</string>
+    <string name="crime_title_hint">输入恶习名称</string>
+    <string name="crime_title_label">名称</string>
+    <string name="crime_details_label">详细</string>
+    <string name="crime_solved_label">已处理</string>
+    <string name="crime_call_police">报警！</string>
+    <string name="jump_first">转至首项</string>
+    <string name="jump_last">转至尾项</string>
+    <string name="date_picker_title">Date of Crime:</string>
+    <string name="time_picker_title">Time of Crime:</string>
+    <string name="button_ok">OK!</string>
+    <string name="new_crime">新增</string>
+    <string name="show_subtitle">Show Subtitle</string>
+    <string name="hide_subtitle">Hide Subtitle</string>
+    <string name="subtitle_format">%1$d crime</string>
+    <plurals name="subtitle_plural">
+        <item quantity="one">%1$d crime</item>
+        <item quantity="other">%1$d crimes</item>
+    </plurals>
+    <string name="delete_crime">Delete</string>
+</resources>
