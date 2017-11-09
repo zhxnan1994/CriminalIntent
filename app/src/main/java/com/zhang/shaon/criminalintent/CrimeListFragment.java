@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.constraint.ConstraintLayout;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -17,6 +18,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -39,6 +41,8 @@ public class CrimeListFragment extends Fragment {
     private Callbacks mCallbacks;
     private static final String EXTRA_POSITION = "com.zhang.shaon.criminalintent.position";
     private static final String SAVED_SUBTITLE_VISIBLE = "subtitle";
+    private ConstraintLayout mEmptyView;
+    private Button mNewCrimeButton;
 
 
     public interface Callbacks{
@@ -64,6 +68,7 @@ public class CrimeListFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+
         View v = inflater.inflate(R.layout.fragment_crime_list, container, false);
 
         mCrimeRecyclerView = v.findViewById(R.id.crime_recycler_view);
@@ -71,6 +76,15 @@ public class CrimeListFragment extends Fragment {
         if (savedInstanceState != null) {
             mSubtitleVisible = savedInstanceState.getBoolean(SAVED_SUBTITLE_VISIBLE);
         }
+        mEmptyView = (ConstraintLayout) v.findViewById(R.id.empty_list_layout);
+
+        mNewCrimeButton = (Button) v.findViewById(R.id.add_crime_button);
+        mNewCrimeButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                addCrime();
+            }
+        });
         updateUI();
         return v;
     }
@@ -91,11 +105,15 @@ public class CrimeListFragment extends Fragment {
     public void updateUI(){
         CrimeLab crimeLab = CrimeLab.get(getActivity());
         List<Crime> crimes=crimeLab.getCrimeList();
-        Log.d("CLF.updateSubtitle", "crimeSize" +crimes.size());
+        mEmptyView.setVisibility(View.VISIBLE);
+        if (crimes.size() > 0 ) {
+            mEmptyView.setVisibility(View.INVISIBLE);
+        }
         if(mCrimeAdapter==null){
             mCrimeAdapter = new CrimeAdapter(crimes);
             mCrimeRecyclerView.setAdapter(mCrimeAdapter);
         }else{
+            mCrimeAdapter.setCrimes(crimes);
             if(mPosition>=0){
                 mCrimeAdapter.notifyItemChanged(mPosition);
             }
@@ -240,6 +258,10 @@ public class CrimeListFragment extends Fragment {
         public int getItemCount() {
             return mCrimes.size();
         }
+
+        public void setCrimes(List<Crime> crimes){
+            mCrimes=crimes;
+        }
     }
 
     @Override
@@ -247,6 +269,7 @@ public class CrimeListFragment extends Fragment {
         super.onCreateOptionsMenu(menu, inflater);
         inflater.inflate(R.menu.fragment_crime_list,menu);
         MenuItem subtitleItem = menu.findItem(R.id.show_subtitle);
+        MenuItem initHint = menu.findItem(R.id.init_hint);
         if(mSubtitleVisible){
             subtitleItem.setTitle(R.string.hide_subtitle);
         }else{
@@ -264,10 +287,7 @@ public class CrimeListFragment extends Fragment {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()){
             case R.id.new_crime:
-                Crime crime = new Crime();
-                CrimeLab.get(getActivity()).addCrime(crime);
-                Intent intent = CrimePageActivity.newIntent(getActivity(), crime.getId(),getPosition());
-                startActivity(intent);
+                addCrime();
                 updateUI();
                 return true;
             case R.id.show_subtitle:
@@ -279,6 +299,13 @@ public class CrimeListFragment extends Fragment {
                 return super.onOptionsItemSelected(item);
         }
         //return super.onOptionsItemSelected(item);
+    }
+
+    private void addCrime() {
+        Crime crime = new Crime();
+        CrimeLab.get(getActivity()).addCrime(crime);
+        Intent intent = CrimePageActivity.newIntent(getActivity(), crime.getId(),getPosition());
+        startActivity(intent);
     }
 
     public int getPosition(){

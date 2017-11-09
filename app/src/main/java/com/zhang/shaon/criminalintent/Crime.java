@@ -24,13 +24,19 @@ public class Crime {
     private CharSequence inFormat;
     private String mTimeShow;
     public Crime(){
-        mId= UUID.randomUUID();
+        this(UUID.randomUUID());
+
+
+    }
+
+    public Crime(UUID id){
+        mId=id;
         mDate = new Date();
         mCalendar=Calendar.getInstance();
         setInFormat("yyyy ,MMMM dd, EEEE ");
         setDateShow();
-
     }
+
 
     public UUID getId() {
         return mId;

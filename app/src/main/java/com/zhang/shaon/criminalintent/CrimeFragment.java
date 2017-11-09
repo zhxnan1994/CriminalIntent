@@ -170,6 +170,13 @@ public class CrimeFragment extends Fragment {
         super.onActivityResult(requestCode, resultCode, data);
     }
 
+    @Override
+    public void onPause() {
+        super.onPause();
+        CrimeLab.get(getActivity())
+                .updateCrime(mCrime);
+    }
+
     private void updateDate() {
         updateDate(mCrime.getDateShow());
     }

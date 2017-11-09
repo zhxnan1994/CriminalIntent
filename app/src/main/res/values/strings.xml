@@ -19,4 +19,5 @@
         <item quantity="other">%1$d crimes</item>
     </plurals>
     <string name="delete_crime">Delete</string>
+    <string name="init_hint_text">没有可显示的Crime!</string>
 </resources>
