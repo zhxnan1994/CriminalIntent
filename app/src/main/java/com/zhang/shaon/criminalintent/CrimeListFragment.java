@@ -194,8 +194,8 @@ public class CrimeListFragment extends Fragment {
             intent.putExtra(EXTRA_POSITION,mPosition);
             startActivity(intent);*/
             mCallbacks.onCrimeSelected(mCrime,mPosition);
-            String s=getActivity().getIntent().getSerializableExtra(CrimeListActivity.REQUEST_DELETE).toString();
-            Log.d("onClick", "requestcode" + s);
+            /*String s=getActivity().getIntent().getSerializableExtra(CrimeListActivity.REQUEST_DELETE).toString();
+            Log.d("onClick", "requestcode" + s);*/
             //startActivityForResult(intent,REQUEST_CRIME);
         }
     }
@@ -269,7 +269,7 @@ public class CrimeListFragment extends Fragment {
         super.onCreateOptionsMenu(menu, inflater);
         inflater.inflate(R.menu.fragment_crime_list,menu);
         MenuItem subtitleItem = menu.findItem(R.id.show_subtitle);
-        MenuItem initHint = menu.findItem(R.id.init_hint);
+
         if(mSubtitleVisible){
             subtitleItem.setTitle(R.string.hide_subtitle);
         }else{

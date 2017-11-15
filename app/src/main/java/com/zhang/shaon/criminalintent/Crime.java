@@ -23,6 +23,8 @@ public class Crime {
     private String mDateShow;
     private CharSequence inFormat;
     private String mTimeShow;
+    private String mSuspect;
+    private String phoneNumber;
     public Crime(){
         this(UUID.randomUUID());
 
@@ -90,6 +92,21 @@ public class Crime {
         mRequirePolice = requirePolice;
     }
 
+    public String getSuspect() {
+        return mSuspect;
+    }
+
+    public void setSuspect(String suspect) {
+        mSuspect = suspect;
+    }
+
+    public String getPhoneNumber() {
+        return phoneNumber;
+    }
+
+    public void setPhoneNumber(String phoneNumber) {
+        this.phoneNumber = phoneNumber;
+    }
 
     public String getTimeString() {
         return android.text.format.DateFormat.format(" a hh:mm", mCalendar).toString();
@@ -104,6 +121,10 @@ public class Crime {
 
     public Calendar getCalendar(){
         return mCalendar;
+    }
+
+    public String getPhotoFilename(){
+        return "IMG" + getId().toString() + ".jpg";
     }
 
 }

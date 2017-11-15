@@ -5,8 +5,8 @@
     <string name="crime_details_label">详细</string>
     <string name="crime_solved_label">已处理</string>
     <string name="crime_call_police">报警！</string>
-    <string name="jump_first">转至首项</string>
-    <string name="jump_last">转至尾项</string>
+    <string name="jump_first">First</string>
+    <string name="jump_last">Last</string>
     <string name="date_picker_title">Date of Crime:</string>
     <string name="time_picker_title">Time of Crime:</string>
     <string name="button_ok">OK!</string>
@@ -20,4 +20,16 @@
     </plurals>
     <string name="delete_crime">Delete</string>
     <string name="init_hint_text">没有可显示的Crime!</string>
+    <string name="crime_suspect">选择行为人</string>
+    <string name="crime_report_text">发送报告</string>
+    <string name="crime_report">%1$s! 事件发生于：%2$s，%3$s，%4$s，%5$s</string>
+    <string name="crime_report_solved">已处理</string>
+    <string name="crime_report_unsolved">未处理</string>
+    <string name="crime_report_police_crime">请报警，拨打110</string>
+    <string name="crime_report_normal_crime">普通事件</string>
+    <string name="crime_report_no_suspect">没有行为人。</string>
+    <string name="crime_report_suspect">行为人是%s。</string>
+    <string name="crime_report_subject">恶行报告</string>
+    <string name="send_report">发送方式：</string>
+    <string name="crime_call_suspect">联系行为人</string>
 </resources>

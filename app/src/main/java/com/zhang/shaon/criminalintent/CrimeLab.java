@@ -5,6 +5,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -72,6 +73,7 @@ public class CrimeLab {
         values.put(CrimeDbSchema.CrimeTable.Cols.DATE, crime.getDate().getTime());
         values.put(CrimeDbSchema.CrimeTable.Cols.SOLVED, crime.isSolved()?1:0);
         values.put(CrimeDbSchema.CrimeTable.Cols.POLICE, crime.isRequirePolice()?1:0);
+        values.put(CrimeDbSchema.CrimeTable.Cols.SUSPECT, crime.getSuspect());
         return values;
     }
     public void addCrime(Crime c){
@@ -103,6 +105,11 @@ public class CrimeLab {
         mDatabase.delete(CrimeDbSchema.CrimeTable.NAME,
                 CrimeDbSchema.CrimeTable.Cols.UUID + "=?",
                 new String[]{c.getId().toString()});
+    }
+
+    public File getPhotoFile(Crime crime) {
+        File fileDir=mContext.getFilesDir();
+        return new File(fileDir, crime.getPhotoFilename());
     }
     /*public Crime getCrime(UUID id){
         for(Crime crime:mCrimes){
