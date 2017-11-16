@@ -30,6 +30,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.widget.Adapter;
 import android.widget.Button;
 import android.widget.CheckBox;
@@ -44,7 +45,6 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
-
 /**
  * Created by zhang on 2017-10-30.
  */
@@ -62,6 +62,7 @@ public class CrimeFragment extends Fragment {
     private static final String ARG_CRIME_ID = "crime_id";
     public static final String DIALOG_DATE = "DialogDate";
     private static final String DIALOG_TIME = "DialogTime";
+    private static final String DIALOG_PHOTO = "DialogPhoto";
 
     private static final int REQUEST_DATE=0;
     private static final int REQUEST_TIME=1;
@@ -72,6 +73,8 @@ public class CrimeFragment extends Fragment {
     private boolean mIsLargeLayout;
     private Callbacks mCallbacks;
     private String mSuspectId;
+    private int mPhotoWidth;
+    private int mPhotoHeight;
 
     public interface Callbacks{
         void onCrimeDate(Crime crime);
@@ -250,7 +253,31 @@ public class CrimeFragment extends Fragment {
             }
         });
         mPhoto = (ImageView) v.findViewById(R.id.crime_photo);
-        updatePhotoView();
+
+
+        mPhoto.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                FragmentManager manager=getFragmentManager();
+                PhotoDialogFragment fragment = PhotoDialogFragment.newInstance(mPhotoFile.getPath());
+                //fragment.setTargetFragment(CrimeFragment.this,6);
+                fragment.show(manager,DIALOG_PHOTO);
+
+            }
+        });
+        ViewTreeObserver observer = mPhoto.getViewTreeObserver();
+        if (observer.isAlive()) {
+            observer.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+                @Override
+                public void onGlobalLayout() {
+                    mPhoto.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                    mPhotoWidth = mPhoto.getMeasuredWidth();
+                    mPhotoHeight = mPhoto.getMeasuredHeight();
+
+                    updatePhotoView();
+                }
+            });
+        }
         return v;
     }
 
@@ -427,7 +454,8 @@ public class CrimeFragment extends Fragment {
             String mSelectionClause = ContactsContract.Data.CONTACT_ID + " = ?";
 
             // Selection criteria
-            String[] mSelectionArgs = {contactId};
+            String[] mSelectionArgs = {""};
+            mSelectionArgs[0]=contactId;
 
 
             // Does a query against the table and returns a Cursor object
@@ -478,9 +506,10 @@ public class CrimeFragment extends Fragment {
         if (mPhotoFile == null || !mPhotoFile.exists()) {
             mPhoto.setImageDrawable(null);
         }else{
-            Bitmap bitmap = PictureUtils.getScaledBitmap(mPhotoFile.getPath(),
-                    getActivity());
-            mPhoto.setImageBitmap(bitmap);
+                    Bitmap bitmap = PictureUtils.getScaledBitmap(mPhotoFile.getPath()
+                            ,mPhotoHeight,mPhotoWidth);
+                    mPhoto.setImageBitmap(bitmap);
+
         }
     }
     }
