@@ -6,4 +6,5 @@
         android:title="@string/delete_crime"
         app:showAsAction="ifRoom|withText"
         android:icon="@drawable/ic_delete_item"/>
+
 </menu>

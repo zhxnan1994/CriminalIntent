@@ -1,5 +1,6 @@
 package com.zhang.shaon.criminalintent;
 
+import android.Manifest;
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
@@ -79,10 +80,12 @@ public class CrimeFragment extends Fragment {
     public interface Callbacks{
         void onCrimeDate(Crime crime);
         void onCrimeIdSelected(UUID id);
+        void onCrimeUpdated(Crime crime);
     }
 
     private static final String[] CONTACTS_PERMISSIONS= new String[]{
-            Manifest.permission.READ_CONTACTS
+            Manifest.permission.READ_CONTACTS,
+            Manifest.permission.WRITE_CONTACTS
     };
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -110,6 +113,8 @@ public class CrimeFragment extends Fragment {
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 mCrime.setTitle(s.toString());
+                updateCrime();
+
             }
 
             @Override
@@ -128,11 +133,11 @@ public class CrimeFragment extends Fragment {
                 /*Intent intent = DatePickerActivity.newIntent(getContext(), mCrime.getDate());
                 startActivityForResult(intent,0);*/
                 if (mIsLargeLayout) {
-                    FragmentManager manager = getFragmentManager();
-                    Fragment newDetail = DatePickerFragment.newInstance(mCrime.getDate());
-                    manager.beginTransaction()
-                            .replace(R.id.date_fragment_container,newDetail)
-                            .commit();
+                    FragmentManager manager=getFragmentManager();
+
+                    DatePickerFragment dialog = DatePickerFragment.newInstance(mCrime.getDate());
+                    dialog.setTargetFragment(CrimeFragment.this,REQUEST_DATE);
+                    dialog.show(manager,DIALOG_DATE);
 
                 } else {
                     Intent intent = DatePickerActivity.newIntent(getContext(), mCrime.getDate());
@@ -161,6 +166,7 @@ public class CrimeFragment extends Fragment {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 mCrime.setSolved(isChecked);
+                updateCrime();
             }
         });
 
@@ -170,6 +176,7 @@ public class CrimeFragment extends Fragment {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 mCrime.setRequirePolice(isChecked);
+                updateCrime();
             }
         });
 
@@ -297,14 +304,17 @@ public class CrimeFragment extends Fragment {
             Date date=(Date) data.getSerializableExtra(DatePickerFragment.EXTRA_DATE);
             mCrime.setDate(date);
             mCrime.setDateShow();
+            updateCrime();
             updateDate();
         }else if (requestCode == REQUEST_TIME) {
             Calendar time = (Calendar) data.getSerializableExtra(TimePickerFragment.EXTRA_TIME);
             mCrime.setTime(time);
+            updateCrime();
             updateTime();
         }else if(requestCode==REQUEST_CONTACT && data!=null){
             String suspectName = getSuspectName(data);
             mCrime.setSuspect(suspectName);
+            updateCrime();
             mSuspectButton.setText(suspectName);
             if (hasContactPermission()) {
                 updateSuspectPhone();
@@ -317,7 +327,7 @@ public class CrimeFragment extends Fragment {
                     "com.zhang.shaon.criminalintent.fileprovider", mPhotoFile);
 
             getActivity().revokeUriPermission(uri, Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
-
+            updateCrime();
             updatePhotoView();
         }
         super.onActivityResult(requestCode, resultCode, data);
@@ -511,6 +521,11 @@ public class CrimeFragment extends Fragment {
                     mPhoto.setImageBitmap(bitmap);
 
         }
+    }
+
+    public void updateCrime(){
+        CrimeLab.get(getActivity()).updateCrime(mCrime);
+        mCallbacks.onCrimeUpdated(mCrime);
     }
     }
 

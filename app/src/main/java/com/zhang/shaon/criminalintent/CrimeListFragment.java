@@ -1,6 +1,7 @@
 package com.zhang.shaon.criminalintent;
 
 import android.app.Activity;
+import android.content.ClipData;
 import android.content.ComponentCallbacks;
 import android.content.Context;
 import android.content.Intent;
@@ -11,11 +12,13 @@ import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.helper.ItemTouchHelper;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -39,26 +42,35 @@ public class CrimeListFragment extends Fragment {
     private static final int REQUEST_CRIME=1;
     private static final int REQUEST_DELETE=3;
     private Callbacks mCallbacks;
+    private OnDeleteCrimeListener mDeleteCallBacks;
+    private ItemTouchHelper mItemTouchHelper;
     private static final String EXTRA_POSITION = "com.zhang.shaon.criminalintent.position";
     private static final String SAVED_SUBTITLE_VISIBLE = "subtitle";
     private ConstraintLayout mEmptyView;
     private Button mNewCrimeButton;
 
 
+
+
     public interface Callbacks{
         void onCrimeSelected(Crime crime,int position);
     }
 
+    public interface OnDeleteCrimeListener{
+        void onCrimeDelete(Crime crime);
+    }
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
         mCallbacks=(Callbacks) context;
+        mDeleteCallBacks=(OnDeleteCrimeListener) context;
     }
 
     public void onDetach() {
 
         super.onDetach();
         mCallbacks=null;
+        mDeleteCallBacks=null;
     }
 
     public enum ITEM_TYPE{
@@ -85,8 +97,31 @@ public class CrimeListFragment extends Fragment {
                 addCrime();
             }
         });
-        updateUI();
+        initItemTouchHelper();
         return v;
+    }
+
+    private void initItemTouchHelper() {
+        mItemTouchHelper = new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.END) {
+
+
+            @Override
+            public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target) {
+                return false;
+            }
+
+            @Override
+            public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
+                if(direction==ItemTouchHelper.END){
+                    final int pos = viewHolder.getAdapterPosition();
+                    Crime crime = mCrimeAdapter.mCrimes.get(pos);
+                    mDeleteCallBacks.onCrimeDelete(crime);
+                    mCrimeAdapter.notifyItemRemoved(pos);
+
+                }
+            }
+        });
+        mItemTouchHelper.attachToRecyclerView(mCrimeRecyclerView);
     }
 
 
@@ -112,8 +147,10 @@ public class CrimeListFragment extends Fragment {
         if(mCrimeAdapter==null){
             mCrimeAdapter = new CrimeAdapter(crimes);
             mCrimeRecyclerView.setAdapter(mCrimeAdapter);
+            initItemTouchHelper();
         }else{
             mCrimeAdapter.setCrimes(crimes);
+            mCrimeRecyclerView.setHasFixedSize(true);
             if(mPosition>=0){
                 mCrimeAdapter.notifyItemChanged(mPosition);
             }
@@ -126,11 +163,12 @@ public class CrimeListFragment extends Fragment {
 
     }
 
-    private class CrimeHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
+    private class CrimeHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         private TextView mTitleTextView;
         private TextView mDateTextView;
         private ImageView mCrimeSolved;
         private Crime mCrime;
+
         public CrimeHolder(LayoutInflater inflater,ViewGroup parent) {
             super(inflater.inflate(R.layout.list_item_crime,parent,false));
             mTitleTextView = itemView.findViewById(R.id.crime_title);
@@ -143,6 +181,7 @@ public class CrimeListFragment extends Fragment {
             mTitleTextView.setText(mCrime.getTitle());
             mDateTextView.setText(mCrime.getDateShow());
             mCrimeSolved.setVisibility(crime.isSolved()?View.VISIBLE:View.GONE);
+
         }
         @Override
         public void onClick(View v) {
@@ -159,6 +198,9 @@ public class CrimeListFragment extends Fragment {
 
             //startActivityForResult(intent,REQUEST_CRIME);
         }
+
+
+
     }
 
     private class PoliceCrimeHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
@@ -166,6 +208,7 @@ public class CrimeListFragment extends Fragment {
         private TextView mDateTextView;
         private ImageView mCrimeSolved;
         private Crime mCrime;
+
         public PoliceCrimeHolder(LayoutInflater inflater,ViewGroup parent) {
             super(inflater.inflate(R.layout.list_require_police,parent,false));
             mTitleTextView = itemView.findViewById(R.id.crime_title);
@@ -306,6 +349,10 @@ public class CrimeListFragment extends Fragment {
         CrimeLab.get(getActivity()).addCrime(crime);
         Intent intent = CrimePageActivity.newIntent(getActivity(), crime.getId(),getPosition());
         startActivity(intent);
+    }
+
+    public void deleteCrime(Crime crime){
+        CrimeLab.get(getActivity()).delteCrime(crime);
     }
 
     public int getPosition(){

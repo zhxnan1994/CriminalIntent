@@ -142,6 +142,11 @@ public class CrimePageActivity extends AppCompatActivity implements CrimeFragmen
         finish();
     }
 
+    @Override
+    public void onCrimeUpdated(Crime crime) {
+
+    }
+
 
 }
 

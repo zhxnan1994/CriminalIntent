@@ -20,6 +20,7 @@
     </plurals>
     <string name="delete_crime">Delete</string>
     <string name="init_hint_text">没有可显示的Crime!</string>
+    <string name="init_hint_land">无记录！</string>
     <string name="crime_suspect">选择行为人</string>
     <string name="crime_report_text">发送报告</string>
     <string name="crime_report">%1$s! 事件发生于：%2$s，%3$s，%4$s，%5$s</string>

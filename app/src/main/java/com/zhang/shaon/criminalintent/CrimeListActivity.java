@@ -1,8 +1,8 @@
 package com.zhang.shaon.criminalintent;
 
-import android.app.FragmentManager;
 import android.content.Intent;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 
 import java.util.UUID;
 
@@ -11,7 +11,7 @@ import java.util.UUID;
  */
 
 public class CrimeListActivity extends SingleFragmentActivity implements CrimeListFragment.Callbacks,
-        CrimeFragment.Callbacks {
+        CrimeFragment.Callbacks ,CrimeListFragment.OnDeleteCrimeListener{
     private static final String DIALOG_DATE = "DialogDate";
     public static final String REQUEST_DELETE="Delete Crime";
     private static final int REQUEST_DATE=0;
@@ -43,19 +43,38 @@ public class CrimeListActivity extends SingleFragmentActivity implements CrimeLi
         }
     }
 
+
+
     @Override
     public void onCrimeDate(Crime crime){
-        if(findViewById(R.id.fragment_container)!=null){
-            android.support.v4.app.FragmentManager manager=getSupportFragmentManager();
-            DatePickerFragment dialog = DatePickerFragment.newInstance(crime.getDate());
-            dialog.setTargetFragment(newDetail, REQUEST_DATE);
-            dialog.show(manager,DIALOG_DATE);
-        }
 
     }
 
     @Override
     public void onCrimeIdSelected(UUID id) {
 
+    }
+
+    @Override
+    public void onCrimeUpdated(Crime crime) {
+        CrimeListFragment fragment = (CrimeListFragment)
+                getSupportFragmentManager()
+                        .findFragmentById(R.id.fragment_container);
+        fragment.updateUI();
+
+    }
+
+    @Override
+    public void onCrimeDelete(Crime crime) {
+        CrimeListFragment listFragment = (CrimeListFragment)
+                getSupportFragmentManager()
+                        .findFragmentById(R.id.fragment_container);
+        listFragment.deleteCrime(crime);
+        listFragment.updateUI();
+
+        FragmentManager fm = getSupportFragmentManager();
+        fm.beginTransaction()
+                .hide(newDetail)
+                .commit();
     }
 }

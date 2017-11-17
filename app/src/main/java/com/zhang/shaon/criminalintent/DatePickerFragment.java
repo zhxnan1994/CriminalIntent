@@ -57,7 +57,7 @@ public class DatePickerFragment extends DialogFragment {
                 int day=mDatePicker.getDayOfMonth();
                 Date date = new GregorianCalendar(year, month, day).getTime();
                 sendResult(Activity.RESULT_OK, date);
-                if(v.findViewById(R.id.detail_fragment_container)!=null)
+                if(v.findViewById(R.id.detail_fragment_container)==null)
                 {
                     getDialog().dismiss();
                 }else{
