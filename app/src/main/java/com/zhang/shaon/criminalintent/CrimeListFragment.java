@@ -115,7 +115,12 @@ public class CrimeListFragment extends Fragment {
                 if(direction==ItemTouchHelper.END){
                     final int pos = viewHolder.getAdapterPosition();
                     Crime crime = mCrimeAdapter.mCrimes.get(pos);
-                    mDeleteCallBacks.onCrimeDelete(crime);
+                    if(getResources().getBoolean(R.bool.large_layout)){
+                        mDeleteCallBacks.onCrimeDelete(crime);
+                    }else{
+                        deleteCrime(crime);//防止小屏右滑删除闪退
+                    }
+                    updateUI();
                     mCrimeAdapter.notifyItemRemoved(pos);
 
                 }

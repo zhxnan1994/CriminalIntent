@@ -70,7 +70,6 @@ public class CrimeListActivity extends SingleFragmentActivity implements CrimeLi
                 getSupportFragmentManager()
                         .findFragmentById(R.id.fragment_container);
         listFragment.deleteCrime(crime);
-        listFragment.updateUI();
 
         FragmentManager fm = getSupportFragmentManager();
         fm.beginTransaction()
